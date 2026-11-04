@@ -5,4 +5,5 @@
     <div class="carte-corps">
         {{ $slot }}
     </div>
+    
 </div>

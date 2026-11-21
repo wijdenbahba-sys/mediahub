@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Publication;
 use App\Models\Categorie;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\StorePublicationRequest;
+use App\Http\Requests\UpdatePublicationRequest;
 class PublicationController extends Controller
 {
     public function index()
@@ -20,16 +21,25 @@ class PublicationController extends Controller
         return view('contenus.create', compact('categories'));
     }
 
-    public function store(Request $request)
+        public function store(StorePublicationRequest $request)
     {
         $publication = Publication::create([
-            'titre' => $request->input('titre'),
-            'contenu' => $request->input('contenu'),
-            'categorie_id' => $request->input('categorie_id'),
-            'user_id' => 1, // Provisoire, sera remplacé par l'auth en semaine 8
+            'titre' => $request->titre,
+            'contenu' => $request->contenu,
+            'categorie_id' => $request->categorie_id,
+            'user_id' => 1,
         ]);
-
         return redirect()->route('publications.show', $publication)->with('succes', 'Publication créée avec succès.');
+    }
+
+    public function update(UpdatePublicationRequest $request, Publication $publication)
+    {
+        $publication->update([
+            'titre' => $request->titre,
+            'contenu' => $request->contenu,
+            'categorie_id' => $request->categorie_id,
+        ]);
+        return redirect()->route('publications.show', $publication)->with('succes', 'Publication mise à jour avec succès.');
     }
 
     public function show(Publication $publication)
@@ -44,11 +54,7 @@ class PublicationController extends Controller
         return view('contenus.edit', compact('publication', 'categories'));
     }
 
-    public function update(Request $request, Publication $publication)
-    {
-        $publication->update($request->only('titre', 'contenu', 'categorie_id'));
-        return redirect()->route('publications.show', $publication)->with('succes', 'Publication mise à jour avec succès.');
-    }
+    
 
     public function destroy(Publication $publication)
     {

@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Categorie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
+use App\Http\Requests\StoreCategorieRequest;
+use App\Http\Requests\UpdateCategorieRequest;
 class CategorieController extends Controller
 {
     public function index()
@@ -19,14 +20,22 @@ class CategorieController extends Controller
         return view('categories.create');
     }
 
-    public function store(Request $request)
+        public function store(StoreCategorieRequest $request)
     {
         Categorie::create([
             'nom' => $request->nom,
-            'slug' => Str::slug($request->nom)
+            'slug' => \Str::slug($request->nom)
         ]);
-
         return redirect()->route('categories.index')->with('succes', 'Catégorie créée avec succès.');
+    }
+
+    public function update(UpdateCategorieRequest $request, Categorie $category)
+    {
+        $category->update([
+            'nom' => $request->nom,
+            'slug' => \Str::slug($request->nom)
+        ]);
+        return redirect()->route('categories.index')->with('succes', 'Catégorie mise à jour avec succès.');
     }
 
     public function edit(Categorie $category)
@@ -34,15 +43,7 @@ class CategorieController extends Controller
         return view('categories.edit', compact('category'));
     }
 
-    public function update(Request $request, Categorie $category)
-    {
-        $category->update([
-            'nom' => $request->nom,
-            'slug' => Str::slug($request->nom)
-        ]);
-
-        return redirect()->route('categories.index')->with('succes', 'Catégorie mise à jour avec succès.');
-    }
+    
 
     public function destroy(Categorie $category)
     {

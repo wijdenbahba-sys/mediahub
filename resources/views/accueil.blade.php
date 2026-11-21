@@ -7,7 +7,11 @@
     <p>La plateforme de gestion et de diffusion de contenus multimédias.</p>
 
     <div style="margin: 20px 0;">
+@can('gerer-categories')
+    <div style="margin: 20px 0;">
         <a href="{{ route('categories.index') }}" style="background: #2c3e50; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">Gérer les catégories</a>
+    </div>
+@endcan
     </div>
 
     <h2>Nos dernières publications</h2>

@@ -21,19 +21,20 @@ class PublicationController extends Controller
         return view('contenus.create', compact('categories'));
     }
 
-        public function store(StorePublicationRequest $request)
+          public function store(StorePublicationRequest $request)
     {
         $publication = Publication::create([
             'titre' => $request->titre,
             'contenu' => $request->contenu,
             'categorie_id' => $request->categorie_id,
-            'user_id' => 1,
+            'user_id' => auth()->id(), // <-- L'utilisateur connecté
         ]);
         return redirect()->route('publications.show', $publication)->with('succes', 'Publication créée avec succès.');
     }
 
     public function update(UpdatePublicationRequest $request, Publication $publication)
     {
+        $this->authorize('update', $publication); // <-- Vérification de sécurité
         $publication->update([
             'titre' => $request->titre,
             'contenu' => $request->contenu,
@@ -48,8 +49,9 @@ class PublicationController extends Controller
         return view('contenus.show', compact('publication'));
     }
 
-    public function edit(Publication $publication)
+      public function edit(Publication $publication)
     {
+        $this->authorize('update', $publication); // <-- Vérification de sécurité
         $categories = Categorie::all();
         return view('contenus.edit', compact('publication', 'categories'));
     }
@@ -58,6 +60,7 @@ class PublicationController extends Controller
 
     public function destroy(Publication $publication)
     {
+        $this->authorize('delete', $publication); // <-- Vérification de sécurité
         $publication->delete();
         return redirect()->route('publications.index')->with('succes', 'Publication supprimée avec succès.');
     }

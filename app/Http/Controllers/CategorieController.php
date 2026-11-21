@@ -17,11 +17,14 @@ class CategorieController extends Controller
 }
     public function create()
     {
+        Gate::authorize('gerer-categories');
         return view('categories.create');
+        
     }
 
         public function store(StoreCategorieRequest $request)
     {
+        Gate::authorize('gerer-categories');
         Categorie::create([
             'nom' => $request->nom,
             'slug' => \Str::slug($request->nom)
@@ -31,6 +34,8 @@ class CategorieController extends Controller
 
     public function update(UpdateCategorieRequest $request, Categorie $category)
     {
+        
+    Gate::authorize('gerer-categories');
         $category->update([
             'nom' => $request->nom,
             'slug' => \Str::slug($request->nom)
@@ -40,6 +45,7 @@ class CategorieController extends Controller
 
     public function edit(Categorie $category)
     {
+        Gate::authorize('gerer-categories');
         return view('categories.edit', compact('category'));
     }
 
@@ -47,6 +53,7 @@ class CategorieController extends Controller
 
     public function destroy(Categorie $category)
     {
+        Gate::authorize('gerer-categories');
         if ($category->publications()->count() > 0) {
             return redirect()->route('categories.index')->with('erreur', 'Impossible de supprimer, cette catégorie contient des publications.');
         }

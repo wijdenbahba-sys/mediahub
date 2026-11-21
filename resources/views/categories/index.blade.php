@@ -4,7 +4,9 @@
 @section('contenu')
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <h1>Liste des catégories</h1>
-        <a href="{{ route('categories.create') }}" style="background: #2c3e50; color: white; padding: 10px; text-decoration: none;">+ Nouvelle catégorie</a>
+@can('gerer-categories')
+    <a href="{{ route('categories.create') }}" style="...">+ Nouvelle catégorie</a>
+@endcan
     </div>
 
     <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">

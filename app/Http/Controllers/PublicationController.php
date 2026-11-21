@@ -3,23 +3,56 @@
 namespace App\Http\Controllers;
 
 use App\Models\Publication;
+use App\Models\Categorie;
 use Illuminate\Http\Request;
 
 class PublicationController extends Controller
 {
     public function index()
     {
-        // On charge la catégorie et l'auteur en même temps (Eager Loading)
-        $publications = Publication::with(['categorie', 'auteur'])
-            ->latest()
-            ->paginate(9);
-
-        return view('contenus.index', ['publications' => $publications]);
+        $publications = Publication::with(['categorie', 'auteur'])->latest()->paginate(9);
+        return view('contenus.index', compact('publications'));
     }
-public function show(Publication $publication)
-{
-    $publication->load(['categorie', 'auteur', 'commentaires.auteur']);
 
-    return view('contenus.show', ['publication' => $publication]);
-}
+    public function create()
+    {
+        $categories = Categorie::all();
+        return view('contenus.create', compact('categories'));
+    }
+
+    public function store(Request $request)
+    {
+        $publication = Publication::create([
+            'titre' => $request->input('titre'),
+            'contenu' => $request->input('contenu'),
+            'categorie_id' => $request->input('categorie_id'),
+            'user_id' => 1, // Provisoire, sera remplacé par l'auth en semaine 8
+        ]);
+
+        return redirect()->route('publications.show', $publication)->with('succes', 'Publication créée avec succès.');
+    }
+
+    public function show(Publication $publication)
+    {
+        $publication->load(['categorie', 'auteur', 'commentaires.auteur']);
+        return view('contenus.show', compact('publication'));
+    }
+
+    public function edit(Publication $publication)
+    {
+        $categories = Categorie::all();
+        return view('contenus.edit', compact('publication', 'categories'));
+    }
+
+    public function update(Request $request, Publication $publication)
+    {
+        $publication->update($request->only('titre', 'contenu', 'categorie_id'));
+        return redirect()->route('publications.show', $publication)->with('succes', 'Publication mise à jour avec succès.');
+    }
+
+    public function destroy(Publication $publication)
+    {
+        $publication->delete();
+        return redirect()->route('publications.index')->with('succes', 'Publication supprimée avec succès.');
+    }
 }

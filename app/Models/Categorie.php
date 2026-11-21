@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Categorie extends Model
 {
-    public function publications()
-{
-    return $this->hasMany(Publication::class);
-}
-}
+    use HasFactory;
 
+    // Ajoute cette ligne :
+    protected $fillable = ['nom', 'slug'];
+
+    public function publications()
+    {
+        return $this->hasMany(Publication::class);
+    }
+}

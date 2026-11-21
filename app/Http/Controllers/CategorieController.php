@@ -2,63 +2,55 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categorie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CategorieController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
+{
+    // On ajoute ->paginate(5) à la place de ->get()
+    $categories = Categorie::withCount('publications')->paginate(5);
+    return view('categories.index', compact('categories'));
+}
     public function create()
     {
-        //
+        return view('categories.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        Categorie::create([
+            'nom' => $request->nom,
+            'slug' => Str::slug($request->nom)
+        ]);
+
+        return redirect()->route('categories.index')->with('succes', 'Catégorie créée avec succès.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Categorie $category)
     {
-        //
+        return view('categories.edit', compact('category'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Categorie $category)
     {
-        //
+        $category->update([
+            'nom' => $request->nom,
+            'slug' => Str::slug($request->nom)
+        ]);
+
+        return redirect()->route('categories.index')->with('succes', 'Catégorie mise à jour avec succès.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Categorie $category)
     {
-        //
-    }
+        if ($category->publications()->count() > 0) {
+            return redirect()->route('categories.index')->with('erreur', 'Impossible de supprimer, cette catégorie contient des publications.');
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $category->delete();
+        return redirect()->route('categories.index')->with('succes', 'Catégorie supprimée avec succès.');
     }
 }
